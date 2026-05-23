@@ -1,5 +1,5 @@
 import numpy as np
-import scipy.stats as si
+import scipy.stats as si  # 🟢 Kunci penyelesaian ralat ImportError!
 
 def calculate_gamma(S, K, t, r, sigma):
     """Mengira nilai Gamma opsyen menggunakan model Black-Scholes."""
@@ -13,10 +13,14 @@ def calculate_vanna(S, K, t, r, sigma, option_type="call"):
     if t <= 0 or sigma <= 0 or S <= 0 or K <= 0:
         return 0
     d1 = (np.log(S / K) + (r + 0.5 * sigma ** 2) * t) / (sigma * np.sqrt(t))
-    return si.norm.pdf(d1) * (-d1 / sigma)
+    d2 = d1 - sigma * np.sqrt(t)
+    return si.norm.pdf(d1) * (-d2 / sigma)
 
 def calculate_charm(S, K, t, r, sigma, option_type="call"):
-    """Mengira nilai Charm / Delta Bleed (dDelta / dt)."""
+    """
+    Mengira nilai Charm / Delta Bleed (dDelta / dt) menggunakan model Black-Scholes.
+    Menunjukkan kadar kebocoran Delta opsyen untuk setiap 1 hari masa yang berlalu.
+    """
     if t <= 0 or sigma <= 0 or S <= 0 or K <= 0:
         return 0
         
@@ -34,7 +38,7 @@ def calculate_charm(S, K, t, r, sigma, option_type="call"):
     return charm_year / 365.0
 
 def find_gamma_flip(df):
-    """Mencari titik strike di mana Net GEX bertukar arah."""
+    """Mencari titik strike di mana Net GEX bertukar arah dari negatif ke positif."""
     if df.empty or 'Net_GEX' not in df.columns:
         return None
     df_sorted = df.sort_values('Strike').reset_index(drop=True)
